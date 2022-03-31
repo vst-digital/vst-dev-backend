@@ -1,0 +1,2 @@
+class UserMemoTemplate < ApplicationRecord
+end
