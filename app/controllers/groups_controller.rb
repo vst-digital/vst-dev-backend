@@ -2,7 +2,7 @@ class GroupsController < ApplicationController
   include ApiResponse
   before_action :current_project, only: %i[ show update destroy members_add members_remove, index] 
   before_action :set_group, only: %i[ show update destroy members_add members_remove] 
-  # before_action :set_user, only: %i[ members_add members_remove ]
+  before_action :set_user, only: %i[ members_add members_remove ]
 
   # GET /groups
   def index

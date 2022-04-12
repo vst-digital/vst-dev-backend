@@ -6,6 +6,8 @@ class Project < ApplicationRecord
   validates :title, presence: true
   validates :project_description, presence: true
   has_many :groups
+  has_many :user_memo_templates
+  has_many :project_user_memos
 
   enum status: [:draft, :active, :completed, :closed]
 end

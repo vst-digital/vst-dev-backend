@@ -1,26 +1,32 @@
 class UserMemoTemplatesController < ApplicationController
+  include ApiResponse
   before_action :set_user_memo_template, only: %i[ show update destroy ]
+  before_action :current_project, only: %i[ show update destroy index create ]
 
   # GET /user_memo_templates
   def index
-    @user_memo_templates = UserMemoTemplate.all
-
-    render json: @user_memo_templates
+    per_page_value = 10
+    pagination = generate_pagination(current_project.user_memo_templates.page(params[:page_no]).per(per_page_value))
+    json_response(current_project.user_memo_templates, :ok, UserMemoTemplateSerializer, pagination)
   end
 
   # GET /user_memo_templates/1
   def show
-    render json: @user_memo_template
+    json_response(@user_memo_template, :ok, UserMemoTemplateSerializer, pagination ={})
   end
 
   # POST /user_memo_templates
   def create
-    @user_memo_template = UserMemoTemplate.new(user_memo_template_params)
-
-    if @user_memo_template.save
-      render json: @user_memo_template, status: :created, location: @user_memo_template
-    else
-      render json: @user_memo_template.errors, status: :unprocessable_entity
+    if params["memo_template"]["json"]
+      user_memo_template = @project.user_memo_templates.new()
+      user_memo_template.template = params["memo_template"]["json"]
+      user_memo_template.project_id = @project.id
+      user_memo_template.user_id = current_user.id
+      if user_memo_template.save
+        render json: @user_memo_template, status: :created, location: @user_memo_template
+      else
+        render json: @user_memo_template.errors, status: :unprocessable_entity
+      end
     end
   end
 
@@ -46,6 +52,14 @@ class UserMemoTemplatesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_memo_template_params
-      params.require(:user_memo_template).permit(:memo_text)
+      params.require(:memo_template).permit(:id, :number, :name, :template, :memo_text)
+    end
+
+    def current_project
+      if current_user.role == "project_member"
+        @project = Project.find(request.headers['Project'].to_i) 
+      else
+        @project = current_user.organizations.first.projects.find(request.headers['Project'].to_i)
+      end
     end
 end

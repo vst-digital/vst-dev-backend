@@ -19,7 +19,7 @@ class MembersController < ApplicationController
     end
 
     def create
-      response = User.invite!({ email: members_params["email"], role: members_params["role"], name: members_params["name"] }, current_user)
+      response = User.invite!({ email: members_params["email"], role: members_params["role"], first_name: members_params["first_name"], last_name: members_params["last_name"], contact:  members_params["contact"]}, current_user)
       if response 
         per_page_value = 10
         pagination = generate_pagination(current_user.invitations.page(1).per(per_page_value))
@@ -38,7 +38,7 @@ class MembersController < ApplicationController
     private
 
     def members_params
-      params.require(:member).permit(:email, :invitation_token, :password, :name, :role, :id)
+      params.require(:member).permit(:email, :invitation_token, :password, :first_name, :last_name, :role, :id, :contact)
     end
   
     def get_user_from_token

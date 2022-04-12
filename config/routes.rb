@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  mount ActionCable.server => '/cable'
+  resources :project_user_memos
   resources :user_memo_templates
   resources :groups do 
     post "members_add"
