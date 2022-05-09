@@ -1,6 +1,12 @@
 Rails.application.routes.draw do
+  resources :project_user_memo_replies
   mount ActionCable.server => '/cable'
-  resources :project_user_memos
+  resources :project_user_memos do 
+    collection do
+      get :get_recieved_memo
+      get :get_sent_memo
+    end
+  end
   resources :user_memo_templates
   resources :groups do 
     post "members_add"
@@ -24,6 +30,7 @@ Rails.application.routes.draw do
       post "invite"
       post "accept_invitation"
       get "invited_contacts"
+      get "get_group_member"
     end
   end
   root "users#sessions"

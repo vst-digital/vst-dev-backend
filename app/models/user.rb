@@ -10,8 +10,8 @@ class User < ApplicationRecord
   #site_member, will create organization for the subscription_owner
   #subscription_owner, will be able to create the project and can assign the project to a member
   enum role: [:site_owner,:site_member, :subscription_owner, :project_admin, :project_member]
-  has_many :organizations
-  has_many :project_members
+  # has_many :organizations
+  # has_many :project_members
   has_many :projects
   has_many :invitations, class_name: 'User', as: :invited_by
   has_many :created_groups, foreign_key: :user_id, class_name: 'Group'
@@ -35,6 +35,8 @@ class User < ApplicationRecord
     end
     return result
   end
+
+
 
   # def org_projects
   #   result = []
@@ -61,7 +63,11 @@ class User < ApplicationRecord
   # end
 
   def all_projects
-    organizations.first.projects
+    if !projects.blank?
+      projects
+    else
+      Project.where(id: groups.map(&:project_id))
+    end 
   end 
 
 end

@@ -79,7 +79,11 @@ class GroupsController < ApplicationController
     end
 
     def current_project
-      @project = current_user.organizations.first.projects.find(request.headers['Project'].to_i)
+      if current_user.project_member?
+        @project = Project.where(id: current_user.groups.map(&:project).map(&:id)).first
+      else
+        @project = current_user.projects.find(request.headers['Project'].to_i)
+      end
     end
 
     # Only allow a list of trusted parameters through.

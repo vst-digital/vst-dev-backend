@@ -44,6 +44,8 @@ gem "pundit"
 gem 'jsonapi-serializer'
 gem 'kaminari'
 gem 'devise_invitable', '~> 2.0.0'
+gem 'redis'
+gem 'sidekiq'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

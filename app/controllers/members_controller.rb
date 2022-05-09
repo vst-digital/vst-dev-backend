@@ -1,7 +1,9 @@
 # app/controllers/members_controller.rb
 class MembersController < ApplicationController
+    
     include ApiResponse
     before_action :authenticate_user!
+    before_action :current_project, only: %i[ get_group_member, index ]
   
     def index
       per_page_value = 10
@@ -9,6 +11,10 @@ class MembersController < ApplicationController
       json_response(current_user.invitations, :ok, UserSerializer, pagination)
     end
 
+    def get_group_member
+      all_members = current_user.groups.map(&:users).flatten - [current_user]
+      json_response(all_members, :ok, UserSerializer, pagination={})
+    end 
 
     def show
       user = get_user_from_token
@@ -46,6 +52,13 @@ class MembersController < ApplicationController
                                Rails.application.credentials.devise[:jwt_secret_key]).first
       user_id = jwt_payload['sub']
       User.find(user_id.to_s)
+    end
+
+    def current_project
+      @project = current_user.projects.find(request.headers['Project'].to_i)
+      if @project.blank?
+        @project = Project.find_by(id: current_user.groups.map{|a| a.project.id}) 
+      end
     end
 
 end

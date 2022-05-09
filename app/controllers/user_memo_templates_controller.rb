@@ -59,7 +59,7 @@ class UserMemoTemplatesController < ApplicationController
       if current_user.role == "project_member"
         @project = Project.find(request.headers['Project'].to_i) 
       else
-        @project = current_user.organizations.first.projects.find(request.headers['Project'].to_i)
+        @project = current_user.projects.find(request.headers['Project'].to_i)
       end
     end
 end

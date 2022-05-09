@@ -3,6 +3,10 @@ module ApiResponse
     render json: serialized_response(object, serializer, options), status: status
   end
 
+  def json_response_return(object, status = :ok, serializer = nil, options = {})
+    serialized_response(object, serializer, options)
+  end
+
   def serialized_response(obj, serializer, options)
     if serializer.present?
       included_array = included_assoc(options[:include])

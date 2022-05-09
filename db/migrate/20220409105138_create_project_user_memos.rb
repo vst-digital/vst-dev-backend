@@ -6,9 +6,8 @@ class CreateProjectUserMemos < ActiveRecord::Migration[7.0]
       t.string :bcc, array: true, default: []
       t.string :cc, array: true, default: []
       t.integer :project_id
-      t.integer :reply_id
       t.text :subject
-      t.text :body
+      t.text :content
       t.timestamps
     end
   end

@@ -1,13 +1,14 @@
 class MemoChannel < ApplicationCable::Channel
   def subscribed
-    stream_from "memo_channel"
+    room_name = params[:room]   
+    stream_from "memo_channel_#{room_name}"
   end
 
   def unsubscribed
     # Any cleanup needed when channel is unsubscribed
   end
 
-  def speak(data)
-    ActionCable.server.broadcast "memo_channel", message: data['message']
+  def self.speak(data)
+    ActionCable.server.broadcast("memo_channel_#{data['user_id']}", {message: data['message']})
   end
 end
