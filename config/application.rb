@@ -11,7 +11,7 @@ module ProjectManagementBe
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
     config.session_store :cookie_store, key: '_interslice_session'
-    config.hosts.clear
+    config.hosts << 'www.vstapp.co.za'
     # Required for all session management (regardless of session_store)
     config.middleware.use ActionDispatch::Cookies
 
