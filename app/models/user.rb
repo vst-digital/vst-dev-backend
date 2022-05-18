@@ -17,7 +17,7 @@ class User < ApplicationRecord
   has_many :created_groups, foreign_key: :user_id, class_name: 'Group'
   has_many :group_members
   has_many :groups, through: :group_members, class_name: :Group, as: :assigned_groups
-  after_create :create_default_organization, if: Proc.new { |user| user.subscription_owner? &&  user.organizations.blank? }
+  # after_create :create_default_organization, if: Proc.new { |user| user.subscription_owner? &&  user.organizations.blank? }
 
   def create_default_organization
     organizations.create( name: "Default Name", phone: "0987654321", address: "Default address" )
