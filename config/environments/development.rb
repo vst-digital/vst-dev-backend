@@ -54,7 +54,7 @@ Rails.application.configure do
   # Highlight code that triggered database queries in logs.
   config.active_record.verbose_query_logs = true
   Rails.application.config.action_cable.allowed_request_origins = ['http://localhost:3001', 'http://54.253.73.42:8080', 'http://www.vstapp.co.za/', 'http://vstapp.co.za/', 'https://www.vstapp.co.za/', 'http://www.vstapp.co.za/']
-
+  ActionCable.server.config.allowed_request_origins = %w( wss://www.vstapp.co.za/  )
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
