@@ -2,7 +2,6 @@
 class MembersController < ApplicationController
     
     include ApiResponse
-    before_action :authenticate_user!
     before_action :current_project, only: %i[ get_group_member, index ]
   
     def index

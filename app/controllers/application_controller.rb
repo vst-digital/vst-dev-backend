@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::API
-    before_action :authenticate_user!
+    before_action :authenticate_user!, unless: :public_endpoint?
     # around_action :set_current_user
     include Pundit::Authorization
     # before_action :current_project, only: %i[ show index update destroy ]
@@ -10,6 +10,13 @@ class ApplicationController < ActionController::API
         User.find(user_id.to_s)
     end
 
-    
+    protected 
+
+    def public_endpoint?
+        public_endpoints = [
+          { controller: 'members', action: 'accept_invitation' },
+        ]
+        public_endpoints.map{ |endpoint| endpoint[:controller] == controller_name && endpoint[:action] == action_name }.include?(true)
+      end
 
 end
