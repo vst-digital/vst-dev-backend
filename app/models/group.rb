@@ -7,5 +7,6 @@ class Group < ApplicationRecord
 
   def add_admin_to_group
     users << project.user if project.user.subscription_owner? || project.user.project_admin?
+    self.save
   end
 end

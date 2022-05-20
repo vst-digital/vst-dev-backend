@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   mount ActionCable.server => '/cable'
   scope path: 'api' do
     root "users#sessions"
+    resources :user_memo_templates
     resources :organizations
     resources :project_user_memo_replies
     resources :project_user_memos do 
