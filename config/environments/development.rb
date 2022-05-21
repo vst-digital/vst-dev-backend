@@ -70,12 +70,23 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { :host => 'localhost:3000', protocol: 'http' }
 
   config.action_mailer.delivery_method = :smtp
+  # config.action_mailer.smtp_settings = {
+  #   :user_name => '0167c44620e6e7',
+  #   :password => '056d0c88ca6a54',
+  #   :address => 'smtp.mailtrap.io',
+  #   :domain => 'smtp.mailtrap.io',
+  #   :port => '2525',
+  #   :authentication => :cram_md5
+  # }
+
   config.action_mailer.smtp_settings = {
-    :user_name => '0167c44620e6e7',
-    :password => '056d0c88ca6a54',
-    :address => 'smtp.mailtrap.io',
-    :domain => 'smtp.mailtrap.io',
-    :port => '2525',
-    :authentication => :cram_md5
+    :user_name => 'vstappmail@gmail.com',
+    :password => 'Kv!\5P-U{B5vU}PE',
+    :address => 'smtp.gmail.com',
+    :domain => 'gmail.com',
+    :port => '587',
+    :authentication => :plain,
+    :enable_starttls_auto => true,
+    :default_charset => "utf-8"
   }
 end
