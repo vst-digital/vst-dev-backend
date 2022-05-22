@@ -41,6 +41,7 @@ class ProjectUserMemosController < ApplicationController
       @project_user_memo.sender_id = current_user.id
       @project_user_memo.subject = params["project_user_memo"]["subject"]
       if @project_user_memo.save
+        UserMailer.with(user: User.find_by_id(@project_user_memo.receiver_id), current_user: current_user).send_invite.deliver_later
         data = {}
         data["user_id"] = @project_user_memo.receiver_id
         data["message"] = json_response_return(@project_user_memo, :ok, ProjectUserMemoSerializer, pagination ={})
