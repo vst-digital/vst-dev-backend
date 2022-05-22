@@ -56,10 +56,10 @@ class UserMemoTemplatesController < ApplicationController
     end
 
     def current_project
-      if current_user.role == "project_member"
-        @project = Project.find(request.headers['Project'].to_i) 
-      else
-        @project = current_user.projects.find(request.headers['Project'].to_i)
+      @project = current_user.projects.find_by(id: request.headers['Project'].to_i)
+      if @project.blank?
+        current_user.groups
+        @project = Project.find_by(id: current_user.groups.map{|a| a.project.id}) 
       end
     end
 end
