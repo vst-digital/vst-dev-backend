@@ -13,10 +13,14 @@ class User < ApplicationRecord
   # has_many :organizations
   # has_many :project_members
   has_many :projects
+  has_many :user_storages
   has_many :invitations, class_name: 'User', as: :invited_by
   has_many :created_groups, foreign_key: :user_id, class_name: 'Group'
   has_many :group_members
   has_many :groups, through: :group_members, class_name: :Group, as: :assigned_groups
+  has_one_attached :avatar do |attachable|
+    attachable.variant :thumb, resize_to_limit: [100, 100]
+  end
   # after_create :create_default_organization, if: Proc.new { |user| user.subscription_owner? &&  user.organizations.blank? }
 
   def create_default_organization
