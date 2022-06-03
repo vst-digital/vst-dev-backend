@@ -11,8 +11,8 @@ class UserStoragesController < ApplicationController
   def attach_file
     # @user_storage.first.update(user_storage_params)
     result = convert_data_uri_to_upload({image_url: params["user_storage"]["data"], name: params["user_storage"]["name"]})
-    @user_storage.uploads.attach(io: File.open(result[:tempfile]), filename: result[:filename], content_type: result[:type])
-    json_response(@user_storage , :ok, StorageDatumSerializer, pagination ={})
+    @user_storage.first.uploads.attach(io: File.open(result[:tempfile]), filename: result[:filename], content_type: result[:type])
+    json_response(@user_storage.first , :ok, StorageDatumSerializer, pagination ={})
   end
 
   def share_file
@@ -87,8 +87,8 @@ class UserStoragesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user_storage
-      # @user_storage = @project.get_storage_data(current_user).select{|a| a.id == params[:id].to_i}
-      @user_storage = @project.get_storage_data(current_user).first
+      @user_storage = @project.get_storage_data(current_user).select{|a| a.id == params[:id].to_i}
+      # @user_storage = @project.get_storage_data(current_user).first
     end
 
     # Only allow a list of trusted parameters through.
