@@ -7,7 +7,7 @@ Rails.application.configure do
   # it changes. This slows down response time but is perfect for development
   # since you don't have to restart the web server when you make code changes.
   config.cache_classes = false
-
+  config.active_storage.variant_processor = :mini_magic
   # Do not eager load code on boot.
   config.eager_load = false
 
@@ -32,7 +32,7 @@ Rails.application.configure do
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :amazon
-
+  
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
 
@@ -41,6 +41,7 @@ Rails.application.configure do
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
+  
 
   # Raise exceptions for disallowed deprecations.
   config.active_support.disallowed_deprecation = :raise
@@ -68,7 +69,7 @@ Rails.application.configure do
   # config.action_cable.disable_request_forgery_protection = true
   host = 'localhost:3000'
   config.action_mailer.default_url_options = { :host => 'localhost:3000', protocol: 'http' }
-
+  config.autoloader = :classic
   config.action_mailer.delivery_method = :smtp
   # config.action_mailer.smtp_settings = {
   #   :user_name => '0167c44620e6e7',
@@ -78,15 +79,14 @@ Rails.application.configure do
   #   :port => '2525',
   #   :authentication => :cram_md5
   # }
-
   config.action_mailer.smtp_settings = {
-    :user_name => 'vstappmail@gmail.com',
-    :password => 'Kv!\5P-U{B5vU}PE',
-    :address => 'smtp.gmail.com',
-    :domain => 'gmail.com',
+    :user_name => Rails.application.credentials.smtp_user_name,
+    :password => Rails.application.credentials.smpt_password,
+    :address => Rails.application.credentials.smtp_address,
+    :domain => Rails.application.credentials.smtp_domain,
     :port => '587',
     :authentication => :plain,
     :enable_starttls_auto => true,
-    :default_charset => "utf-8"
+    :default_charset => "utf-8",
   }
 end

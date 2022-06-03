@@ -13,5 +13,8 @@ class StorageDatumSerializer
   #   result
   # end
   attributes :id, :user_storage_id, :project_id, :name, :isDirectory, :size, :parent_id, :__KEY__
+  attributes :items do |obj|
+    obj.uploads_blobs 
+  end
 end
 

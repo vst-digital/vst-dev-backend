@@ -6,8 +6,8 @@ class UserMemoTemplatesController < ApplicationController
   # GET /user_memo_templates
   def index
     per_page_value = 10
-    pagination = generate_pagination(current_project.user_memo_templates.page(params[:page_no]).per(per_page_value))
-    json_response(current_project.user_memo_templates, :ok, UserMemoTemplateSerializer, pagination)
+    pagination = generate_pagination(@project.user_memo_templates.page(params[:page_no]).per(per_page_value))
+    json_response(@project.user_memo_templates, :ok, UserMemoTemplateSerializer, pagination)
   end
 
   # GET /user_memo_templates/1
