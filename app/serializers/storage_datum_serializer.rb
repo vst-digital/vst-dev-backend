@@ -7,12 +7,12 @@ class StorageDatumSerializer
     hash = {} 
     obj.uploads_blobs.each do |blobs|
       hash["id"] = blobs.id
-      hash["filename"] = blobs.filename
+      hash["name"] = blobs.filename
       hash["created_at"] = blobs.created_at
       hash["url"] = blobs.url
       hash["isDirectory"] = false
       hash["size"] = blobs.byte_size
-      result.append(hash)
+      result.append(hash.dup())
     end 
     result
   end

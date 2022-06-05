@@ -13,11 +13,13 @@ class UserStoragesController < ApplicationController
     if @user_storage.new_record?
       @user_storage.name = result[:filename]
       @user_storage.user_id = current_user.id
+      @user_storage.parent_id = user_storage_params["parent_id"].to_i
       if !@user_storage.save
         render json: @user_storage.errors, status: :unprocessable_entity
       end
     end
-    @user_storage.uploads.attach(io: File.open(result[:tempfile]), filename: result[:filename], content_type: result[:type])
+    @user_storage.children.create(name:  result[:filename], user_id: @user_storage.user_id, project_id: @project.id).uploads.attach(io: File.open(result[:tempfile]), filename: result[:filename], content_type: result[:type])
+    # @user_storage.uploads.attach(io: File.open(result[:tempfile]), filename: result[:filename], content_type: result[:type])
     json_response(@user_storage , :ok, StorageDatumSerializer, pagination ={})
   end
 
@@ -61,14 +63,13 @@ class UserStoragesController < ApplicationController
 
   # POST /user_storages
   def create
-    user_storage = @project.get_user_storage(current_user)
     if user_storage_params[:parent_id].present?
-      exsisting_record = StorageDatum.find_by(__KEY__: user_storage_params[:parent_id])
+      exsisting_record = @project.user_storages.find_by(id: user_storage_params[:parent_id])
       @user_storage = exsisting_record.children.create(user_storage_params)
-      @user_storage.user_storage_id = exsisting_record.user_storage_id
     else 
-      @user_storage = user_storage.storage_data.new(user_storage_params)
+      @user_storage = @project.user_storages.new(user_storage_params)
     end
+    @user_storage.user_id = current_user.id
     @user_storage.project_id = @project.id
     if @user_storage.save
       json_response(@project.get_storage_parent_data(current_user) , :ok, StorageDatumSerializer, pagination ={})

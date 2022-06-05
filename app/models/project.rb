@@ -13,10 +13,10 @@ class Project < ApplicationRecord
   enum status: [:draft, :active, :completed, :closed]
 
   def get_user_storage(user)
-    result = user_storages
-    if result.blank?
-      result = user_storages.create(user: user, name: 'default', isDirectory: true)
-    end
+    result = user_storages.present? ? user_storages : []
+    # if result.blank?
+    #   result = user_storages.create(user: user, name: 'default', isDirectory: true)
+    # end
     result
   end
 
