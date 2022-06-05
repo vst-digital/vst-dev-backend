@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     resources :user_storages do 
       collection do 
         post "attach_file"
+        post "share_item"
       end
     end 
     resources :user_memo_templates

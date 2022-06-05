@@ -1,20 +1,20 @@
 class StorageDatumSerializer
   include JSONAPI::Serializer
-  # attributes :items do |obj|
-  #   result = {}
-  #   result[:id] = obj.id
-  #   result[:user_storage_id] = obj.user_storage_id
-  #   result[:project_id] = obj.project_id
-  #   result[:name] = obj.name
-  #   result[:isDirectory] = obj.isDirectory
-  #   result[:size] = obj.size
-  #   result[:parent_id] = obj.parent_id
-  #   result[:__KEY__] = obj.__KEY__
-  #   result
-  # end
-  attributes :id, :user_storage_id, :project_id, :name, :isDirectory, :size, :parent_id, :__KEY__
+
+  attributes :id, :project_id, :name, :isDirectory, :size, :parent_id, :__KEY__
   attributes :items do |obj|
-    obj.uploads_blobs 
+    result = []
+    hash = {} 
+    obj.uploads_blobs.each do |blobs|
+      hash["id"] = blobs.id
+      hash["filename"] = blobs.filename
+      hash["created_at"] = blobs.created_at
+      hash["url"] = blobs.url
+      hash["isDirectory"] = false
+      hash["size"] = blobs.byte_size
+      result.append(hash)
+    end 
+    result
   end
 end
 

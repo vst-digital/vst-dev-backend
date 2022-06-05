@@ -1,7 +1,7 @@
-class UserStoragesController < ApplicationController
+class StorageDatumController < ApplicationController
   include ApiResponse
   before_action :current_project, only: %i[ create index show update destroy attach_file share_file]
-  before_action :set_user_storage, only: %i[ show update destroy attach_file share_file]
+  before_action :set_storage_datum, only: %i[ show update destroy attach_file share_file]
 
   # GET /user_storages
   def index
@@ -10,12 +10,12 @@ class UserStoragesController < ApplicationController
 
   def attach_file
     result = convert_data_uri_to_upload({image_url: params["user_storage"]["data"], name: params["user_storage"]["name"]})
-    @user_storage.uploads.attach(io: File.open(result[:tempfile]), filename: result[:filename], content_type: result[:type])
-    json_response(@user_storage , :ok, StorageDatumSerializer, pagination ={})
+    @storage_datum.first.uploads.attach(io: File.open(result[:tempfile]), filename: result[:filename], content_type: result[:type])
+    json_response(@storage_datum.first , :ok, StorageDatumSerializer, pagination ={})
   end
 
   def share_item
-    @user_storage
+    @storage_datum
   end
 
   def split_base64(uri_str)
@@ -41,15 +41,12 @@ class UserStoragesController < ApplicationController
       temp_img_file << image_data_binary
       temp_img_file.rewind
       return {:filename => obj_hash[:name], :type => image_data[:type], :tempfile => temp_img_file.path}
-      # uploaded_file = ActionDispatch::Http::UploadedFile.new(img_params)
-      # obj_hash[:image] = uploaded_file
-      # obj_hash.delete(:image_url)
     end
   end
 
   # GET /user_storages/1
   def show
-    json_response(@user_storage.first.children , :ok, StorageDatumSerializer, pagination ={})
+    json_response(@storage_datum.first.children , :ok, StorageDatumSerializer, pagination ={})
   end
 
   # POST /user_storages
@@ -57,40 +54,39 @@ class UserStoragesController < ApplicationController
     user_storage = @project.get_user_storage(current_user)
     if user_storage_params[:parent_id].present?
       exsisting_record = StorageDatum.find_by(__KEY__: user_storage_params[:parent_id])
-      @user_storage = exsisting_record.children.create(user_storage_params)
-      @user_storage.user_storage_id = exsisting_record.user_storage_id
+      @storage_datum = exsisting_record.children.create(user_storage_params)
+      @storage_datum.user_storage_id = exsisting_record.user_storage_id
     else 
-      @user_storage = user_storage.storage_data.new(user_storage_params)
+      @storage_datum = user_storage.storage_data.new(user_storage_params)
     end
-    @user_storage.project_id = @project.id
-    if @user_storage.save
+    @storage_datum.project_id = @project.id
+    if @storage_datum.save
       json_response(@project.get_storage_parent_data(current_user) , :ok, StorageDatumSerializer, pagination ={})
     else
-      render json: @user_storage.errors, status: :unprocessable_entity
+      render json: @storage_datum.errors, status: :unprocessable_entity
     end
   end
 
   # PATCH/PUT /user_storages/1
   def update
-    if @user_storage.update(user_storage_params)
-      render json: @user_storage
+    if @storage_datum.update(user_storage_params)
+      render json: @storage_datum
     else
-      render json: @user_storage.errors, status: :unprocessable_entity
+      render json: @storage_datum.errors, status: :unprocessable_entity
     end
   end
 
   # DELETE /user_storages/1
   def destroy
-    @user_storage.destroy
+    @storage_datum.destroy
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_user_storage
-      @user_storage = @project.user_storages.find_by(params[:id])
+    def set_storage_datum
+      @storage_datum = @project.get_storage_data(current_user).select{|a| a.id == params[:id].to_i}
     end
 
-    # Only allow a list of trusted parameters through.
     def user_storage_params
       params.require(:user_storage).permit(:id, :name, :isDirectory, :parent_id, :size, :__KEY__, :uploads)
     end
@@ -102,5 +98,4 @@ class UserStoragesController < ApplicationController
         @project = Project.find_by(id: current_user.groups.map{|a| a.project.id}) 
       end
     end
-    
 end

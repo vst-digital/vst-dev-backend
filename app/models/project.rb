@@ -8,23 +8,20 @@ class Project < ApplicationRecord
   has_many :groups
   has_many :user_memo_templates
   has_many :project_user_memos
+  has_many :user_storages
 
   enum status: [:draft, :active, :completed, :closed]
 
   def get_user_storage(user)
-    result = UserStorage.find_by(user: user, project: self)
+    result = user_storages
     if result.blank?
-      result = UserStorage.create(user: user, project: self, name: 'default')
+      result = user_storages.create(user: user, name: 'default', isDirectory: true)
     end
     result
   end
 
-  def get_storage_data(user)
-    get_user_storage(user).try(:storage_data)
-  end 
-
   def get_storage_child_data(user, parent_id)
-    result = get_storage_data(user)
+    result = get_user_storage(user)
     if result
       return result.select{|a| a.parent_id == parent_id}
     end
@@ -32,7 +29,7 @@ class Project < ApplicationRecord
   end 
 
   def get_storage_parent_data(user)
-    result = get_storage_data(user)
+    result = get_user_storage(user)
     if result
       return result.select{|a| a.parent_id.blank?}
     end

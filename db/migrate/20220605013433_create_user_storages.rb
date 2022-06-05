@@ -1,7 +1,7 @@
-class CreateStorageData < ActiveRecord::Migration[7.0]
+class CreateUserStorages < ActiveRecord::Migration[7.0]
   def change
-    create_table :storage_data do |t|
-      t.integer :user_storage_id
+    create_table :user_storages do |t|
+      t.integer :user_id
       t.integer :project_id
       t.text :name
       t.boolean :isDirectory, default: false
