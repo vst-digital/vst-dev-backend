@@ -10,6 +10,13 @@ class UserStoragesController < ApplicationController
 
   def attach_file
     result = convert_data_uri_to_upload({image_url: params["user_storage"]["data"], name: params["user_storage"]["name"]})
+    if @user_storage.new_record?
+      @user_storage.name = result[:filename]
+      @user_storage.user_id = current_user.id
+      if !@user_storage.save
+        render json: @user_storage.errors, status: :unprocessable_entity
+      end
+    end
     @user_storage.uploads.attach(io: File.open(result[:tempfile]), filename: result[:filename], content_type: result[:type])
     json_response(@user_storage , :ok, StorageDatumSerializer, pagination ={})
   end
@@ -49,7 +56,7 @@ class UserStoragesController < ApplicationController
 
   # GET /user_storages/1
   def show
-    json_response(@user_storage.first.children , :ok, StorageDatumSerializer, pagination ={})
+    json_response(@user_storage.children , :ok, StorageDatumSerializer, pagination ={})
   end
 
   # POST /user_storages
@@ -87,7 +94,10 @@ class UserStoragesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user_storage
-      @user_storage = @project.user_storages.find_by(params[:id])
+      @user_storage = @project.user_storages.find_by(id: params[:id])
+      if @user_storage.blank?
+        @user_storage = @project.user_storages.new()
+      end 
     end
 
     # Only allow a list of trusted parameters through.
