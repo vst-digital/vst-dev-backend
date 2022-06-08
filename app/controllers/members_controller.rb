@@ -11,7 +11,7 @@ class MembersController < ApplicationController
     end
 
     def get_group_member
-      all_members = current_user.groups.map(&:users).flatten - [current_user]
+      all_members = @project.get_all_members - [current_user]
       json_response(all_members, :ok, UserSerializer, pagination={})
     end 
 
