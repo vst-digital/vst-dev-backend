@@ -2,12 +2,12 @@
 class MembersController < ApplicationController
     
     include ApiResponse
-    before_action :current_project, only: %i[ get_group_member, index ]
+    before_action :current_project, only: %i[ get_group_member index create ]
   
     def index
-      per_page_value = 10
-      pagination = generate_pagination(current_user.invitations.page(1).per(per_page_value))
-      json_response(current_user.invitations, :ok, UserSerializer, pagination)
+      per_page_value = 50
+      pagination = generate_pagination(@project.groups.page(params[:page_no] || 1).per(per_page_value))
+      json_response(@project.get_all_members, :ok, UserSerializer, pagination)
     end
 
     def get_group_member
@@ -26,7 +26,7 @@ class MembersController < ApplicationController
     def create
       response = User.invite!({ email: members_params["email"], role: members_params["role"], first_name: members_params["first_name"], last_name: members_params["last_name"], contact:  members_params["contact"]}, current_user)
       if response 
-        current_user.groups.find_by(id: params[:member][:group][:id]).users <<  response
+        @project.groups.find_by(id: params[:member][:group][:id]).users << response
         per_page_value = 10
         pagination = generate_pagination(current_user.invitations.page(1).per(per_page_value))
         json_response(current_user.invitations, :ok, UserSerializer, pagination)
@@ -55,9 +55,10 @@ class MembersController < ApplicationController
     end
 
     def current_project
-      @project = current_user.projects.find(request.headers['Project'].to_i)
-      if @project.blank?
-        @project = Project.find_by(id: current_user.groups.map{|a| a.project.id}) 
+      if current_user.project_member?
+        @project = Project.where(id: current_user.groups.map(&:project).map(&:id)).first
+      else
+        @project = current_user.all_projects.find(request.headers['Project'].to_i)
       end
     end
 

@@ -7,4 +7,7 @@ class UserSerializer
   attributes :initials do |obj|
     obj.first_name[0..0] + obj.last_name[0..0]
   end
+  attributes :invited_by do |obj|
+    obj.invited_by.try(:email)
+  end
 end

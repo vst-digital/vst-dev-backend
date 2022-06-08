@@ -1,14 +1,14 @@
 class GroupsController < ApplicationController
   include ApiResponse
-  before_action :current_project, only: %i[ show update destroy members_add members_remove, index] 
+  before_action :current_project, only: %i[ show update destroy members_add members_remove index create] 
   before_action :set_group, only: %i[ show update destroy members_add members_remove] 
   before_action :set_user, only: %i[ members_add members_remove ]
 
   # GET /groups
   def index
     per_page_value = 10
-    pagination = generate_pagination(current_project.groups.page(1).per(per_page_value))
-    json_response(current_project.groups, :ok, GroupSerializer, pagination)
+    pagination = generate_pagination(@project.groups.page(params[:page_no] || 1).per(per_page_value))
+    json_response(@project.groups, :ok, GroupSerializer, pagination)
   end
 
   # GET /groups/1
@@ -18,7 +18,7 @@ class GroupsController < ApplicationController
 
   # POST /groups
   def create
-    @group = current_project.groups.new(group_params)
+    @group = @project.groups.new(group_params)
     if @group.save
       render json: @group, status: :created, location: @group
     else
@@ -66,7 +66,7 @@ class GroupsController < ApplicationController
       else
         id = params[:id]
       end
-      @group = current_project.groups.find(id)
+      @group = @project.groups.find(id)
     end
 
     def set_user
@@ -82,7 +82,7 @@ class GroupsController < ApplicationController
       if current_user.project_member?
         @project = Project.where(id: current_user.groups.map(&:project).map(&:id)).first
       else
-        @project = current_user.projects.find(request.headers['Project'].to_i)
+        @project = current_user.all_projects.find(request.headers['Project'].to_i)
       end
     end
 

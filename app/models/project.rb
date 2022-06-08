@@ -36,4 +36,8 @@ class Project < ApplicationRecord
     result
   end 
 
+  def get_all_members
+    groups.map(&:users).try(:flatten)
+  end
+
 end
