@@ -81,10 +81,10 @@ Rails.application.configure do
   # }
   config.action_mailer.smtp_settings = {
     :user_name => Rails.application.credentials.smtp_user_name,
-    :password => Rails.application.credentials.smpt_password,
-    :address => Rails.application.credentials.smtp_address,
-    :domain => Rails.application.credentials.smtp_domain,
-    :port => '587',
+    :password => Rails.application.credentials.smtp_password,
+    :address => "smtp.gmail.com",
+    :domain => "smtp.gmail.com",
+    :port => 587,
     :authentication => :plain,
     :enable_starttls_auto => true,
     :default_charset => "utf-8",
