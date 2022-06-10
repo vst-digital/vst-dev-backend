@@ -1,0 +1,2 @@
+class UserInspectionSheet < ApplicationRecord
+end

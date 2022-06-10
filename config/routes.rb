@@ -1,13 +1,20 @@
 Rails.application.routes.draw do
+  
   mount ActionCable.server => '/cable'
   scope path: 'api' do
     root "users#sessions"
     resources :user_storages do 
       collection do 
         post "attach_file"
+      end
+      member do 
         post "share_item"
+        get "generate_link"
       end
     end 
+    resources :user_storage_accesses
+    resources :user_inspection_sheets
+    resources :inspection_sheets
     resources :user_memo_templates
     resources :organizations
     resources :project_user_memo_replies

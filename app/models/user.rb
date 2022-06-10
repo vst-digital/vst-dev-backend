@@ -18,6 +18,12 @@ class User < ApplicationRecord
   has_many :created_groups, foreign_key: :user_id, class_name: 'Group'
   has_many :group_members
   has_many :groups, through: :group_members, class_name: :Group, as: :assigned_groups
+  has_many :user_storage_accesses, foreign_key: 'shared_by_id' do 
+    def by_project(project)
+      where(project_id: project)
+    end
+  end
+  
   has_one_attached :avatar do |attachable|
     attachable.variant :thumb, resize_to_limit: [100, 100]
   end

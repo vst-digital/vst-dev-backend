@@ -9,11 +9,27 @@ class Project < ApplicationRecord
   has_many :user_memo_templates
   has_many :project_user_memos
   has_many :user_storages
+  has_many :user_storage_accesses
+  has_many :user_storage_access_data, through: :user_storage_accesses, foreign_key: :user_storage_id, class_name: "UserStorageAccess"
 
   enum status: [:draft, :active, :completed, :closed]
 
   def get_user_storage(user)
-    result = user_storages.present? ? user_storages : []
+    exsisting_user_storage = user_storages.where(user_id: user.id)
+    exsisting_user_storage_accesses = user_storage_accesses.where(shared_with_id: user.id)
+    if exsisting_user_storage.present?
+      result = exsisting_user_storage
+    end
+    if exsisting_user_storage_accesses.present?
+      result = exsisting_user_storage_accesses.map(&:user_storage)
+    end
+    if exsisting_user_storage.present? && exsisting_user_storage_accesses.present?
+      data_to_append = exsisting_user_storage_accesses.map(&:user_storage)
+      result = (exsisting_user_storage + data_to_append).uniq
+    end
+    if exsisting_user_storage.blank? && exsisting_user_storage_accesses.blank?
+      result = []
+    end 
     result
   end
 
@@ -27,8 +43,8 @@ class Project < ApplicationRecord
 
   def get_storage_parent_data(user)
     result = get_user_storage(user)
-    if result
-      return result.select{|a| a.parent_id.blank?}
+    if result.class == "Array"
+      return result.where(parent_id: nil)
     end
     result
   end 

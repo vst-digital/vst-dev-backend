@@ -1,11 +1,11 @@
 class UserStoragesController < ApplicationController
   include ApiResponse
-  before_action :current_project, only: %i[ create index show update destroy attach_file share_file]
-  before_action :set_user_storage, only: %i[ show update destroy attach_file share_file]
+  before_action :current_project, only: %i[ create index show update destroy attach_file ]
+  before_action :set_user_storage, only: %i[ show update destroy attach_file share_file ]
 
   # GET /user_storages
   def index
-    json_response(@project.get_storage_parent_data(current_user) , :ok, StorageDatumSerializer, pagination ={})
+    json_response(@project.get_storage_parent_data(current_user) , :ok, UserStorageSerializer, pagination ={})
   end
 
   def attach_file
@@ -13,18 +13,24 @@ class UserStoragesController < ApplicationController
     if @user_storage.new_record?
       @user_storage.name = result[:filename]
       @user_storage.user_id = current_user.id
-      @user_storage.parent_id = user_storage_params["parent_id"].to_i
+      @user_storage.parent_id = user_storage_params["parent_id"]
       if !@user_storage.save
         render json: @user_storage.errors, status: :unprocessable_entity
       end
     end
-    @user_storage.children.create(name:  result[:filename], user_id: @user_storage.user_id, project_id: @project.id).uploads.attach(io: File.open(result[:tempfile]), filename: result[:filename], content_type: result[:type])
-    # @user_storage.uploads.attach(io: File.open(result[:tempfile]), filename: result[:filename], content_type: result[:type])
-    json_response(@user_storage , :ok, StorageDatumSerializer, pagination ={})
+    # @user_storage.children.create(name:  result[:filename], user_id: @user_storage.user_id, project_id: @project.id).uploads.attach(io: File.open(result[:tempfile]), filename: result[:filename], content_type: result[:type])
+    @user_storage.uploads.attach(io: File.open(result[:tempfile]), filename: result[:filename], content_type: result[:type])
+    json_response(@user_storage , :ok, UserStorageSerializer, pagination ={})
   end
 
-  def share_item
-    @user_storage
+  def generate_link
+    url = Rails.application.routes.url_helpers.rails_blob_path(ActiveStorage::Attachment.find(params[:id]), only_path: true)
+    if url
+      url = request.base_url+url
+      render json: {url: url}, status: :ok
+    else
+      render json: {message: "Something went wrong!"}, status: :unprocessable_entity
+    end
   end
 
   def split_base64(uri_str)
@@ -58,7 +64,7 @@ class UserStoragesController < ApplicationController
 
   # GET /user_storages/1
   def show
-    json_response(@user_storage.children , :ok, StorageDatumSerializer, pagination ={})
+    json_response(@user_storage.children , :ok, UserStorageSerializer, pagination ={})
   end
 
   # POST /user_storages
@@ -72,7 +78,7 @@ class UserStoragesController < ApplicationController
     @user_storage.user_id = current_user.id
     @user_storage.project_id = @project.id
     if @user_storage.save
-      json_response(@project.get_storage_parent_data(current_user) , :ok, StorageDatumSerializer, pagination ={})
+      json_response(@project.get_storage_parent_data(current_user) , :ok, UserStorageSerializer, pagination ={})
     else
       render json: @user_storage.errors, status: :unprocessable_entity
     end
@@ -89,7 +95,11 @@ class UserStoragesController < ApplicationController
 
   # DELETE /user_storages/1
   def destroy
-    @user_storage.destroy
+    if @user_storage.destroy
+      render json: {message: "Item deleted"}, status: :ok
+    else
+      render json: @user_storage.errors, status: :unprocessable_entity
+    end
   end
 
   private
