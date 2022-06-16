@@ -49,6 +49,7 @@ gem 'sidekiq'
 gem "aws-sdk-s3", require: false
 gem 'acts_as_tree', '~> 2.4'
 gem 'rmagick'
+gem 'whenever'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
