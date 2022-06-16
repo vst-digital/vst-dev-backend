@@ -24,9 +24,10 @@ class UserStoragesController < ApplicationController
   end
 
   def generate_link
-    url = Rails.application.routes.url_helpers.rails_blob_path(ActiveStorage::Attachment.find(params[:id]), only_path: true)
+    # url = Rails.application.routes.url_helpers.rails_blob_path(ActiveStorage::Attachment.find(params[:id]), only_path: true)
+    url = ActiveStorage::Attachment.find_by(id: params[:id]).try(:url)
     if url
-      url = request.base_url+url
+      # url = request.base_url+url
       render json: {url: url}, status: :ok
     else
       render json: {message: "Something went wrong!"}, status: :unprocessable_entity
