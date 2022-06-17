@@ -24,15 +24,19 @@ class MembersController < ApplicationController
     end
 
     def create
-      response = User.invite!({ email: members_params["email"], role: members_params["role"], first_name: members_params["first_name"], last_name: members_params["last_name"], contact:  members_params["contact"]}, current_user)
-      if response 
-        @project.groups.find_by(id: params[:member][:group][:id]).users << response
-        per_page_value = 10
-        pagination = generate_pagination(current_user.invitations.page(1).per(per_page_value))
-        json_response(current_user.invitations, :ok, UserSerializer, pagination)
-      else
-        render json: { message: 'Hmm nothing happened.' }, status: 500
-      end 
+      data = { email: members_params["email"], role: members_params["role"], first_name: members_params["first_name"], last_name: members_params["last_name"], contact:  members_params["contact"]}
+      response = MailerJob.set(queue: :mailer).perform_later(data, current_user, @project, params[:member][:group][:id])
+      per_page_value = 50
+      pagination = generate_pagination(current_user.invitations.page(1).per(per_page_value))
+      json_response(current_user.invitations, :ok, UserSerializer, pagination)
+      # if response 
+      #   @project.groups.find_by(id: params[:member][:group][:id]).users << response
+      #   per_page_value = 10
+      #   pagination = generate_pagination(current_user.invitations.page(1).per(per_page_value))
+      #   json_response(current_user.invitations, :ok, UserSerializer, pagination)
+      # else
+      #   render json: { message: 'Hmm nothing happened.' }, status: 500
+      # end 
     end
 
     def accept_invitation
