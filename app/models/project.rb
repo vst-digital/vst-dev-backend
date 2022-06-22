@@ -43,8 +43,8 @@ class Project < ApplicationRecord
 
   def get_storage_parent_data(user)
     result = get_user_storage(user)
-    if result.class == "Array" || result.present?
-      return result.select{|a| a.parent_id== nil}
+    if result.class == "Array"
+      return result.where(parent_id: nil)
     end
     result
   end 
