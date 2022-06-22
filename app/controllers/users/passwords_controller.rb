@@ -1,4 +1,4 @@
-class Users::PasswordsController < Devise::SessionsController
+class Users::PasswordsController < Devise::PasswordsController
   before_action :set_user, only: [:create]
   respond_to :json
   
