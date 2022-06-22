@@ -1,5 +1,7 @@
+require 'sidekiq/web'
 Rails.application.routes.draw do
-  
+  resources :calanders
+  mount Sidekiq::Web => '/sidekiq'
   mount ActionCable.server => '/cable'
   scope path: 'api' do
     root "users#sessions"
@@ -34,7 +36,8 @@ Rails.application.routes.draw do
     devise_for :users,
       controllers: {
         sessions: 'users/sessions',
-        registrations: 'users/registrations'
+        registrations: 'users/registrations',
+        passwords: 'users/passwords'
       }
     resources :members do 
       member do
