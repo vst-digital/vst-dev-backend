@@ -29,6 +29,10 @@ class User < ApplicationRecord
   end
   # after_create :create_default_organization, if: Proc.new { |user| user.subscription_owner? &&  user.organizations.blank? }
 
+  def jwt_payload
+    { 'initials' => "#{first_name.first}#{last_name.first}", 'user_name' =>  first_name, 'user' => role, 'contact' => contact}
+  end
+
   def create_default_organization
     organizations.create( name: "Default Name", phone: "0987654321", address: "Default address" )
   end 
