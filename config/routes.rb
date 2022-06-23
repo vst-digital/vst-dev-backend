@@ -1,10 +1,10 @@
 require 'sidekiq/web'
 Rails.application.routes.draw do
-  resources :calanders
   mount Sidekiq::Web => '/sidekiq'
   mount ActionCable.server => '/cable'
   scope path: 'api' do
     root "users#sessions"
+    resources :calanders
     resources :user_storages do 
       collection do 
         post "attach_file"
