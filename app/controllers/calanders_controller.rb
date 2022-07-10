@@ -44,6 +44,6 @@ class CalandersController < BaseController
 
     # Only allow a list of trusted parameters through.
     def calander_params
-      params.require(:calander).permit(:id, :start_date, :end_date, :subject, :location)
+      params.require(:calander).permit(:id, :start_date, :end_date, :subject, :location, shared_calander_events_attributes: [:id, :_destroy, :shared_with_id, :calander_id])
     end
 end

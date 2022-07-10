@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_id: one
+  shared_with_id: 1
+  calander_id: one
+
+two:
+  user_id: two
+  shared_with_id: 1
+  calander_id: two
