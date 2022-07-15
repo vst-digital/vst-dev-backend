@@ -12,6 +12,8 @@ class User < ApplicationRecord
   has_many :groups, -> {extending ByProjectExtension}, through: :group_members, class_name: :Group, as: :assigned_groups
   has_many :user_storage_accesses, -> {extending ByProjectExtension}, foreign_key: 'shared_by_id'
   has_many :calanders, -> {extending ByProjectExtension}
+  has_many :inspection_sheets, -> {extending ByProjectExtension}
+  has_many :user_inspection_sheets, -> {extending ByProjectExtension}
   
   has_one_attached :avatar do |attachable|
     attachable.variant :thumb, resize_to_limit: [100, 100]
@@ -27,7 +29,7 @@ class User < ApplicationRecord
   enum role: [:site_owner, :site_member, :subscription_owner, :project_admin, :project_member]
 
   def jwt_payload
-    { 'initials' => "#{first_name.first}#{last_name.first}", 'user_name' =>  first_name, 'user' => role, 'contact' => contact}
+    { 'initials' => "#{first_name.first}#{last_name.first}", 'user_name' =>  first_name, 'user' => role, 'contact' => contact, 'expirationTime': (Time.current + 8.hours).to_i}
   end
 
   # after_create :create_default_organization, if: Proc.new { |user| user.subscription_owner? &&  user.organizations.blank? }
