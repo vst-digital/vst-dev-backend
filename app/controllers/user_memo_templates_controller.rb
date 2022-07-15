@@ -17,13 +17,14 @@ class UserMemoTemplatesController < ApplicationController
 
   # POST /user_memo_templates
   def create
-    if params["memo_template"]["json"]
+    if params["memo_template"]["template"]
       user_memo_template = @project.user_memo_templates.new()
       user_memo_template.template = params["memo_template"]["json"]
       user_memo_template.project_id = @project.id
       user_memo_template.user_id = current_user.id
+      user_memo_template.name = user_memo_template_params[:name]
       if user_memo_template.save
-        render json: @user_memo_template, status: :created, location: @user_memo_template
+        json_response(user_memo_template, :ok, UserMemoTemplateSerializer, pagination ={})
       else
         render json: @user_memo_template.errors, status: :unprocessable_entity
       end
